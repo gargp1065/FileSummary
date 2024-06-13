@@ -11,7 +11,7 @@ datafolder=/u02/eirsdata/logs/smsUssdSummary
 mkdir -p ${appfolderdir}
 mkdir -p ${datafolder}
 
-echo `tar -xzvf smsUssdSummary_1.0.0.2.tar.gz >> smsUssdSummary_Module_untar_$(date +%Y%m%d)_log.txt`
+echo `tar -xzvf smsUssdSummary_1.0.0.0.tar.gz >> smsUssdSummary_Module_untar_$(date +%Y%m%d)_log.txt`
 echo `mv smsUssdSummary/* ${appfolderdir}`
 
 echo "++++++++++++Module Installation completed+++++++++++"
