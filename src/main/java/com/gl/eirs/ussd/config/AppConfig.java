@@ -12,19 +12,19 @@ public class AppConfig {
     @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
     int batchCount;
 
-    @Value("${sms.file.path}")
-    String smsFilePath;
-
-    @Value("${ussd.file.path}")
-    String ussdFilePath;
+//    @Value("${file.path}")
+//    String smsFilePath;
+//
+//    @Value("${ussd.file.path}")
+//    String ussdFilePath;
 
     @Value("${process.type}")
     String processType;
 
-    @Value("${sms.file.pattern}")
-    String smsFilePattern;
-    @Value("${ussd.file.pattern}")
-    String ussdFilePattern;
+//    @Value("${sms.file.pattern}")
+//    String smsFilePattern;
+//    @Value("${ussd.file.pattern}")
+//    String ussdFilePattern;
     @Value("${alert.url}")
     String alertUrl;
     @Value("${initial.timer}")
@@ -42,9 +42,20 @@ public class AppConfig {
     @Value("${move.file.path}")
     private String moveFilePath;
 
-    @Value("${sms.file.separator}")
-    private String smsFileSeparator;
+//    @Value("${sms.file.separator}")
+//    private String smsFileSeparator;
+//
+//    @Value("${ussd.file.separator}")
+//    private String ussdFileSeparator;
+//
+    @Value("${file.path}")
+    String filePath;
+    @Value("${file.separator.parameter}")
+    String fileSeparatorParameter;
 
-    @Value("${ussd.file.separator}")
-    private String ussdFileSeparator;
+    @Value("${file.name.pattern}")
+    String fileNamePattern;
+
+    @Value("${error.file.path}")
+    String errorFilePath;
 }

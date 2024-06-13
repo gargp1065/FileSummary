@@ -71,12 +71,12 @@ public class FileService {
         }
 
         try {
-            ArrayList<FileDto> fileDtos = fileServiceUtils.getFiles(appConfig.getUssdFilePath(), appConfig.getUssdFilePattern());
+            ArrayList<FileDto> fileDtos = fileServiceUtils.getFiles(appConfig.getFilePath(), appConfig.getFileNamePattern());
             logger.info("The count of files is {}", fileDtos.size());
             if (fileDtos.isEmpty()) {
                 logger.error("No files found. Raising an alert");
                 alertService.raiseAnAlert("alert5500", "", "", 0);
-                System.exit(1);
+                return;
             }
             for (FileDto fileDto : fileDtos) {
                 int moduleAuditId = 0;
@@ -91,7 +91,14 @@ public class FileService {
                     ModulesAuditTrail entity = modulesAuditTrailRepository.save(modulesAuditTrail);
                     moduleAuditId = entity.getId();
                     String fullFileName = fileDto.getFilePath() + fileDto.getFileName();
-                    ussdService.processUssdFile(fileDto);
+                    if(ussdService.processUssdFile(fileDto, appConfig.getOperator().trim())) {
+                        logger.error("Processing failed for file ussd summary.");
+                        logger.info("The summary for file {} is {}", fileDto.getFileName(), fileDto);
+                        modulesAuditTrailRepository.updateModulesAudit(501, "FAIL", "Processing failed for ussd summary.", (int) fileDto.getTotalRecords(), (int)fileDto.getFailedRecords(), (int) (System.currentTimeMillis() - startTime), LocalDateTime.now(), (int)fileDto.getSuccessRecords(), moduleAuditId);
+                        alertService.raiseAnAlert("alert5501", fileDto.getFileName(), appConfig.getOperator(), 0);
+                        fileServiceUtils.moveFile(fileDto, appConfig.getMoveFilePath());
+                        continue;
+                    }
                     modulesAuditTrailRepository.updateModulesAudit(200, "SUCCESS", "NA", (int) fileDto.getTotalRecords(), (int) fileDto.getFailedRecords(), (int) (System.currentTimeMillis() - startTime), LocalDateTime.now(), (int) fileDto.getSuccessRecords(),moduleAuditId);
                     fileServiceUtils.moveFile(fileDto, appConfig.getMoveFilePath());
                     logger.info("The summary for file {} is {}", fileDto.getFileName(), fileDto);
@@ -122,12 +129,12 @@ public class FileService {
             return;
         }
         try {
-            ArrayList<FileDto> fileDtos = fileServiceUtils.getFiles(appConfig.getSmsFilePath(), appConfig.getSmsFilePattern());
+            ArrayList<FileDto> fileDtos = fileServiceUtils.getFiles(appConfig.getFilePath(), appConfig.getFileNamePattern());
             logger.info("The count of files is {}", fileDtos.size());
             if (fileDtos.isEmpty()) {
                 logger.error("No files found. Raising an alert");
                 alertService.raiseAnAlert("alert5600", "", "", 0);
-                System.exit(1);
+                return;
             }
 
             for (FileDto fileDto : fileDtos) {
@@ -143,7 +150,15 @@ public class FileService {
                     ModulesAuditTrail modulesAuditTrail = modulesAuditTrailBuilder.forInsert(201, "INITIAL", "NA", smsModuleName + appConfig.getOperator(), smsFeatureName, "", fileDto.getFileName(), LocalDateTime.now());
                     ModulesAuditTrail entity = modulesAuditTrailRepository.save(modulesAuditTrail);
                     moduleAuditId = entity.getId();
-                    smsService.processSmsFile(fileDto);
+
+                    if(smsService.processSmsFile(fileDto, appConfig.getOperator().trim())) {
+                        logger.error("Processing failed for file sms summary.");
+                        logger.info("The summary for file {} is {}", fileDto.getFileName(), fileDto);
+                        modulesAuditTrailRepository.updateModulesAudit(501, "FAIL", "Processing failed for sms summary", (int) fileDto.getTotalRecords(), (int) fileDto.getFailedRecords(), (int) (System.currentTimeMillis() - startTime), LocalDateTime.now(), (int) fileDto.getSuccessRecords(), moduleAuditId);
+                        alertService.raiseAnAlert("alert5601", fileDto.getFileName(), appConfig.getOperator(), 0);
+                        fileServiceUtils.moveFile(fileDto, appConfig.getMoveFilePath());
+                        continue;
+                    }
                     modulesAuditTrailRepository.updateModulesAudit(200, "SUCCESS", "NA", (int) fileDto.getTotalRecords(), (int) fileDto.getFailedRecords(), (int) (System.currentTimeMillis() - startTime), LocalDateTime.now(), (int) fileDto.getSuccessRecords(),moduleAuditId);
                     fileServiceUtils.moveFile(fileDto, appConfig.getMoveFilePath());
                     logger.info("The summary for file {} is {}", fileDto.getFileName(), fileDto);
@@ -152,6 +167,7 @@ public class FileService {
                     logger.info("The summary for file {} is {}", fileDto.getFileName(), fileDto);
                     modulesAuditTrailRepository.updateModulesAudit(501, "FAIL", "Processing failed for sms summary due to error " + e.getMessage(), (int) fileDto.getTotalRecords(), (int) fileDto.getFailedRecords(), (int) (System.currentTimeMillis() - startTime), LocalDateTime.now(), (int) fileDto.getSuccessRecords(), moduleAuditId);
                     alertService.raiseAnAlert("alert5601", fileDto.getFileName(), appConfig.getOperator(), 0);
+                    fileServiceUtils.moveFile(fileDto, appConfig.getMoveFilePath());
                 }
             }
         } catch (Exception e) {

@@ -15,9 +15,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 
 @Service
 public class FileServiceUtils {
@@ -47,7 +49,7 @@ public class FileServiceUtils {
     public ArrayList<FileDto> getFiles(String folderPath, String suffix) {
 
         File dir = new File(folderPath);
-        FileFilter fileFilter = new WildcardFileFilter("*"+suffix);
+        FileFilter fileFilter = new WildcardFileFilter("*"+suffix+"*");
         logger.info(dir.getAbsolutePath());
         File[] files = dir.listFiles(fileFilter);
         logger.info("The count of files is {}", files.length);
@@ -63,8 +65,10 @@ public class FileServiceUtils {
 
     public void moveFile(FileDto file, String moveFilePath) {
         try {
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
             logger.info("Moving File:{} to {}", file.getFileName(), moveFilePath);
-            Files.move(Paths.get(file.getFilePath() + "/" + file.getFileName()), Paths.get(moveFilePath + "/" + file.getFileName()));
+            Files.move(Paths.get(file.getFilePath() + "/" + file.getFileName()), Paths.get(moveFilePath + "/" + sdf.format(date) + "_" +  file.getFileName()));
             logger.info("Moved File:{} to {}", file.getFileName(), moveFilePath);
         } catch (IOException e) {
             e.printStackTrace();

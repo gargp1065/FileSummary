@@ -19,7 +19,7 @@ public class MainService {
 
     public void processFile() throws Exception {
         logger.info("Starting the process of ussd/sms summary");
-        String processType=appConfig.getProcessType();
+        String processType=appConfig.getProcessType().trim();
         if(processType.equalsIgnoreCase("ussd"))
             fileService.fileReadUssd();
         else if(processType.equalsIgnoreCase("sms"))

@@ -10,14 +10,14 @@ import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @Data
-@Table(name="ussd_summary")
+@Table(name="ussd_usage_1205")
 public class Ussd {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name="request_init_date")
-    LocalDateTime requestInitDate;
+    String requestInitDate;
 
     @Column(name="request_type")
     String requestType;
@@ -35,7 +35,7 @@ public class Ussd {
     String input;
 
     @Column(name="session_end_date_time")
-    LocalDateTime sessionEndDateTime;
+    String sessionEndDateTime;
 
     @Column(name="reason_session_close")
     String reasonSessionClose;

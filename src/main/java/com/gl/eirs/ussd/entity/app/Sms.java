@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(name="sms_summary")
+@Table(name="sms_usage_1205")
 public class Sms {
 
     @Id
@@ -17,8 +17,8 @@ public class Sms {
     @Column(name="msisdn")
     String msisdn;
 
-    @Column(name="sms_received_date")
-    LocalDateTime smsReceivedDate;
+    @Column(name="sms_recieved_date")
+    String smsReceivedDate;
 
     @Column(name="short_code")
     String shortCode;
@@ -27,7 +27,7 @@ public class Sms {
     String requestFromCustomer;
 
     @Column(name="response_date_time")
-    LocalDateTime responseDateTime;
+    String responseDateTime;
 
     @Column(name="response")
     String response;
